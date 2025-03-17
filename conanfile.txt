@@ -1,0 +1,13 @@
+[requires]
+boost/1.87.0
+tomlplusplus/3.4.0
+
+[options]
+boost/*:without_stacktrace=True
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[layout]
+cmake_layout
