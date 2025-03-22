@@ -1,0 +1,11 @@
+[project]
+name = "libs"
+
+[target.libs]
+requires = [ "a", "b" ]
+
+[target.a]
+base_path = "lib/a"
+
+[target.b]
+base_path = "lib/b"

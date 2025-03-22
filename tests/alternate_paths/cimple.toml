@@ -1,0 +1,6 @@
+[project]
+name = "alternate_paths"
+
+[target.alternate_paths]
+header_path = "my_src"
+src_path = "my_src"

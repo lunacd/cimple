@@ -1,5 +1,3 @@
-include(CTest)
-
 find_package(GTest REQUIRED)
 find_package(Boost REQUIRED COMPONENTS process)
 
@@ -27,7 +25,7 @@ endif()
 target_compile_definitions(cimple-tests PRIVATE BOOST_PROCESS_USE_STD_FS)
 
 include(GoogleTest)
-gtest_discover_tests(cimple-tests
+gtest_discover_tests(cimple-tests PROPERTIES
     ENVIRONMENT_MODIFICATION
     "CIMPLE_TEST_DATA_DIR=set:${CMAKE_CURRENT_SOURCE_DIR}"
 )
