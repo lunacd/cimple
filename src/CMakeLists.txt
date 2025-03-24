@@ -4,6 +4,7 @@ add_library(libcimple
     cimple_build.cpp
     cimple_cmd.cpp
     cimple_diagnostics.cpp
+    cimple_ninja.cpp
 )
 
 add_executable(cimple
@@ -12,12 +13,14 @@ add_executable(cimple
 
 find_package(cps REQUIRED)
 find_package(tomlplusplus REQUIRED)
-find_package(graaf REQUIRED)
+find_package(boost REQUIRED COMPONENTS process)
 
 target_link_libraries(libcimple PRIVATE
     cps
     tomlplusplus::tomlplusplus
-    Graaf::Graaf
+    Boost::process
 )
 
 target_link_libraries(cimple PRIVATE libcimple)
+
+target_compile_definitions(libcimple PRIVATE BOOST_PROCESS_USE_STD_FS)

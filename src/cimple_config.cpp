@@ -12,9 +12,12 @@ namespace cimple {
 Target load_target(const std::string_view &name,
                    const toml::table &target_table,
                    const std::filesystem::path &project_dir) {
-  return Target{.name = std::string{name},
-                .header_dir = project_dir / "headers",
-                .source_dir = project_dir / "src"};
+  return Target{
+      .name = std::string{name},
+      .base_dir = project_dir,
+      .header_dir = project_dir / "headers",
+      .source_dir = project_dir / "src",
+  };
 }
 
 std::vector<Target> load_targets(const toml::table &targets_table,
@@ -28,12 +31,18 @@ std::vector<Target> load_targets(const toml::table &targets_table,
     targets.emplace_back(
         load_target(target_name.str(), *target_table, project_dir));
   }
-  return std::vector<Target>{};
+  return targets;
 };
 
 Config load_config(const std::filesystem::path &config_path) {
   auto config = toml::parse_file(config_path.generic_string());
   const auto project_dir = config_path.parent_path();
+
+  // Project name
+  auto project_name = config["project"]["name"].value<std::string>();
+  if (!project_name) {
+    throw std::runtime_error("project.name must be specified in cimple.toml");
+  }
 
   // Load targets
   auto targets_table = config["target"].as_table();
@@ -41,17 +50,29 @@ Config load_config(const std::filesystem::path &config_path) {
                                     ? load_targets(*targets_table, project_dir)
                                     : std::vector<Target>{};
 
-  const auto c_compiler = which("clang");
-  const auto cxx_compiler = which("clang++");
-
-  if (!c_compiler || !cxx_compiler) {
-    throw std::runtime_error("Failed to find C or C++ compiler");
+  // Default target of project name
+  if (targets.size() == 0) {
+    targets.emplace_back(Target{
+        .name = project_name.value(),
+        .base_dir = project_dir,
+        .header_dir = project_dir / "headers",
+        .source_dir = project_dir / "src",
+    });
   }
+
+  // TODO: provide a clang toolchain.
+  // TODO: make this configurable.
+  const auto c_compiler =
+      std::filesystem::path("C:/Program Files/LLVM/bin/clang.exe");
+  const auto cxx_compiler =
+      std::filesystem::path("C:/Program Files/LLVM/bin/clang++.exe");
 
   return Config{.targets = targets,
                 .project_dir = project_dir,
-                .c_compiler = c_compiler.value(),
-                .cxx_compiler = cxx_compiler.value(),
+                // TODO: make build dir configurable
+                .build_dir = project_dir / "build",
+                .c_compiler = c_compiler,
+                .cxx_compiler = cxx_compiler,
                 .c_flags = {},
                 .cxx_flags = {},
                 .c_extensions = {".c"},

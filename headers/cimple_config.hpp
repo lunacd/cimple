@@ -8,15 +8,19 @@ namespace cimple {
 class Target {
 public:
   std::string name;
+  std::filesystem::path base_dir;
   std::filesystem::path header_dir;
   std::filesystem::path source_dir;
 };
 
 class Config {
 public:
+  std::string project_name;
+
   std::vector<Target> targets;
 
   std::filesystem::path project_dir;
+  std::filesystem::path build_dir;
 
   std::filesystem::path c_compiler;
   std::filesystem::path cxx_compiler;

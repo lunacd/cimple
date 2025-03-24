@@ -1,5 +1,6 @@
-#include <test_util.hpp>
 #include <cimple_diagnostics.hpp>
+#include <cstddef>
+#include <test_util.hpp>
 
 #include <filesystem>
 #include <stdexcept>
@@ -34,7 +35,7 @@ void CimpleTest::SetUp(std::string_view name) {
   test_name = name;
 
   const auto resource_dir_raw = std::getenv("CIMPLE_TEST_DATA_DIR");
-  ASSERT_TRUE(resource_dir_raw)
+  ASSERT_TRUE(resource_dir_raw != nullptr)
       << "Expecting CIMPLE_TEST_DATA_DIR environment to be set during test.";
   std::filesystem::path resource_dir = std::filesystem::path(resource_dir_raw);
   project_dir = resource_dir / test_name;
@@ -43,7 +44,7 @@ void CimpleTest::SetUp(std::string_view name) {
 
 void CimpleTest::TearDown() { std::filesystem::remove_all(build_dir); }
 
-void CimpleTest::assert_no_issues() {
+void CimpleTest::assert_no_issues() const {
   for (const auto &message : Diagnostics::history) {
     ASSERT_EQ(message.type, Diagnostics::DiagnosticType::Info);
   }
@@ -52,7 +53,7 @@ void CimpleTest::assert_no_issues() {
 void CimpleTest::assert_program_output(
     const std::filesystem::path &program, int exit_code,
     const std::optional<std::string_view> &stdout_expected,
-    const std::optional<std::string_view> &stderr_expected) {
+    const std::optional<std::string_view> &stderr_expected) const {
   boost::asio::io_context context;
 
   boost::asio::readable_pipe rp_out{context};
@@ -71,6 +72,17 @@ void CimpleTest::assert_program_output(
     const auto stderr_content = read_pipe(rp_err);
     ASSERT_EQ(stderr_content, stderr_expected.value());
   }
+}
+
+std::filesystem::path
+CimpleTest::get_program_path(const std::filesystem::path &path) const {
+#ifdef _WIN32
+  auto new_path = path;
+  new_path.replace_extension("exe");
+  return new_path;
+#else
+  return path;
+#endif
 }
 
 } // namespace cimple::testing

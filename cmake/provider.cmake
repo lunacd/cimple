@@ -7,11 +7,6 @@ FetchContent_Declare(
     GIT_TAG dceec9a1efed8b13f2a34111fe40cdd9a18edd99
 )
 FetchContent_Declare(
-    graaf
-    GIT_REPOSITORY https://github.com/bobluppes/graaf.git
-    GIT_TAG e4a41e2b5bca49af86e17c4811072514706f790e
-)
-FetchContent_Declare(
     GTest
     URL https://github.com/google/googletest/archive/refs/tags/v1.16.0.tar.gz
     URL_HASH SHA256=78c676fc63881529bf97bf9d45948d905a66833fbfa5318ea2cd7478cb98f399

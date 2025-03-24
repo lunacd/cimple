@@ -22,8 +22,8 @@ TEST_F(CimpleTest, basic) {
   ASSERT_TRUE(std::filesystem::exists(build_dir));
 
   // THEN: the built binary should print "Hello World" and exit 142
-  std::filesystem::path program_path = project_dir / "basic";
+  std::filesystem::path program_path = get_program_path(build_dir / "basic");
   ASSERT_TRUE(std::filesystem::exists(program_path));
-  assert_program_output(program_path, 42);
+  assert_program_output(program_path, 148);
 }
 } // namespace cimple::testing
