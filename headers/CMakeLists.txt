@@ -5,6 +5,8 @@ target_sources(libcimple PUBLIC FILE_SET HEADERS FILES
     cimple_cmd.hpp
     cimple_diagnostics.hpp
     cimple_ninja.hpp
+    cimple_pkg_config.hpp
+    cimple_build_pkg.hpp
 )
 
 target_include_directories(libcimple PUBLIC .)

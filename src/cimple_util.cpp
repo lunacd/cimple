@@ -2,10 +2,9 @@
 
 #include <algorithm>
 #include <filesystem>
-#include <iterator>
-#include <optional>
 #include <string_view>
 #include <vector>
+
 
 #ifdef _WIN32
 #include <io.h>
@@ -15,55 +14,21 @@
 
 namespace cimple {
 std::vector<std::string_view> split(std::string_view str, char delim) {
-  size_t last = 0, next = 0;
-  std::vector<std::string_view> out;
-
-  while ((next = str.find(delim, last)) != std::string_view::npos) {
-    out.emplace_back(str.substr(last, next - last));
-    last = next + 1;
-  }
-  out.emplace_back(str.substr(last));
-
-  return out;
-};
-
-bool can_execute(const std::filesystem::path &path) {
-#ifdef _WIN32
-  if (_waccess(path.c_str(), 4) == 0) {
-    return true;
-  }
-  return false;
-#else
-  return access(path.c_str(), X_OK) == 0;
-#endif
-}
-
-std::optional<std::filesystem::path> which(std::string_view command) {
-  const char path_sep =
-#ifdef _WIN32
-      ';'
-#else
-      ':'
-#endif
-      ;
-  std::string path_env = std::getenv("PATH");
-  std::vector<std::string_view> paths_str = split(path_env, path_sep);
-  std::vector<std::filesystem::path> paths;
-  std::transform(paths_str.begin(), paths_str.end(), std::back_inserter(paths),
-                 [](const auto &str) { return std::filesystem::path{str}; });
-  for (const auto &path : paths) {
-    for (const auto &entry : std::filesystem::directory_iterator(path)) {
-      if (entry.path().filename() != command) {
-        continue;
-      }
-      if (!can_execute(entry)) {
-        continue;
-      }
-      return entry.path();
+  std::vector<std::string_view> result;
+  size_t current_delim = 0;
+  size_t start = 0;
+  size_t next = str.find(delim, start);
+  while (current_delim != std::string_view::npos) {
+    const auto segment = str.substr(start, next - start);
+    if (segment.size() > 0) {
+      result.emplace_back(segment);
     }
+    current_delim = next;
+    start = current_delim + 1;
+    next = str.find(delim, start);
   }
-  return std::nullopt;
-}
+  return result;
+};
 
 std::vector<std::filesystem::path>
 files_with_extension(const std::filesystem::path &dir,

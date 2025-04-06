@@ -1,0 +1,12 @@
+[pkg]
+support_platforms = [
+    "windows-x86_64"
+]
+
+[input]
+url = ""
+sha256 = ""
+
+[output]
+format_version = 1
+sha256 = ""

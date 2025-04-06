@@ -1,6 +1,7 @@
 [requires]
 boost/1.87.0
 tomlplusplus/3.4.0
+lua/5.4.7
 
 [options]
 boost/*:without_stacktrace=True

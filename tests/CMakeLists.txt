@@ -2,12 +2,17 @@ find_package(GTest REQUIRED)
 find_package(Boost REQUIRED COMPONENTS process)
 
 add_executable(cimple-tests
-    basic.cpp
+    build_tests/basic.cpp
+    build_tests/build_test_util.cpp
+    pkg_tests/pkg_test_util.cpp
+    pkg_tests/basic.cpp
     test_util.cpp
 )
 
 target_sources(cimple-tests PRIVATE FILE_SET HEADERS FILES
     test_util.hpp
+    build_tests/build_test_util.hpp
+    pkg_tests/pkg_test_util.hpp
 )
 
 target_link_libraries(cimple-tests PRIVATE
