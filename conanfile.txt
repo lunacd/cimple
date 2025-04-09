@@ -2,9 +2,12 @@
 boost/1.87.0
 tomlplusplus/3.4.0
 lua/5.4.7
+libcurl/8.12.1
+libarchive/3.7.9
 
 [options]
 boost/*:without_stacktrace=True
+libcurl/*:with_ssl=schannel
 
 [generators]
 CMakeDeps

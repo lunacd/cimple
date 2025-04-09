@@ -7,6 +7,8 @@ add_library(libcimple
     cimple_ninja.cpp
     cimple_pkg_config.cpp
     cimple_build_pkg.cpp
+    cimple_requests.cpp
+    cimple_tar.cpp
 )
 
 add_executable(cimple
@@ -17,12 +19,16 @@ find_package(cps REQUIRED)
 find_package(tomlplusplus REQUIRED)
 find_package(boost REQUIRED COMPONENTS process program_options)
 find_package(lua REQUIRED)
+find_package(curl REQUIRED)
+find_package(LibArchive REQUIRED)
 
 target_link_libraries(libcimple PRIVATE
     cps
     tomlplusplus::tomlplusplus
     Boost::process
     lua::lua
+    CURL::libcurl
+    LibArchive::LibArchive
 )
 
 if (WIN32)

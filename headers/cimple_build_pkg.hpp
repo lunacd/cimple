@@ -23,6 +23,7 @@ private:
   boost::asio::io_context m_io_context;
   lua_State *m_lua_state;
   PkgConfig m_config;
+  std::filesystem::path m_temp_dir;
 
   int run_process(const std::string_view &program,
                   const std::vector<std::string> &args);

@@ -1,8 +1,10 @@
 #include <cimple_build_pkg.hpp>
 #include <cimple_pkg_config.hpp>
+#include <cimple_requests.hpp>
+#include <cimple_tar.hpp>
 #include <cimple_util.hpp>
 
-#include <iostream>
+
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -38,7 +40,9 @@ int open_cimple_lib(lua_State *L) {
 }
 
 PkgBuildContext::PkgBuildContext(PkgConfig config)
-    : m_config(std::move(config)) {
+    : m_config(std::move(config)),
+      // TODO: get a real temp dir
+      m_temp_dir("D:/temp") {
   m_lua_state = luaL_newstate();
   luaL_openlibs(m_lua_state);
 
@@ -158,6 +162,18 @@ int PkgBuildContext::l_run(lua_State *L) {
 }
 
 void PkgBuildContext::build_pkg() {
+  // Download input tarball
+  Curl curl;
+  // TODO: actually take this from config
+  curl.download_file("https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.gz",
+                     m_temp_dir / "m4-1.4.19.tar.gz");
+
+  // Set up build dir
+  // - data/ <=== sneak arbitrary data into the build dir
+  // - input/ <=== patched source
+  // - output/ <=== everything here is packaged
+  extract_tar(m_temp_dir / "m4-1.4.19.tar.gz", m_temp_dir / "input");
+
   const auto handle_lua_error = [this](std::string_view comment) {
     size_t msg_size;
     const char *err_msg = luaL_checklstring(m_lua_state, -1, &msg_size);

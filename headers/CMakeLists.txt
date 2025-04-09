@@ -7,6 +7,8 @@ target_sources(libcimple PUBLIC FILE_SET HEADERS FILES
     cimple_ninja.hpp
     cimple_pkg_config.hpp
     cimple_build_pkg.hpp
+    cimple_requests.hpp
+    cimple_tar.hpp
 )
 
 target_include_directories(libcimple PUBLIC .)

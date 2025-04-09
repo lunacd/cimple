@@ -2,7 +2,6 @@
 
 #include <filesystem>
 #include <string>
-#include <tuple>
 
 #include <boost/asio/readable_pipe.hpp>
 #include <gtest/gtest.h>
