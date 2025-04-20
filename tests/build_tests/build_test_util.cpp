@@ -1,13 +1,11 @@
 #include <build_tests/build_test_util.hpp>
 #include <cimple_diagnostics.hpp>
+#include <cimple_util.hpp>
 #include <test_util.hpp>
 
-#include <boost/process/v2/process.hpp>
-#include <boost/process/v2/stdio.hpp>
+#include <cpp-subprocess/subprocess.hpp>
 
 namespace cimple::testing {
-namespace bp = boost::process;
-
 void CimpleBuildTest::SetUp(std::string_view name) {
   test_name = name;
 
@@ -22,23 +20,17 @@ void CimpleBuildTest::assert_program_output(
     const std::filesystem::path &program, int exit_code,
     const std::optional<std::string_view> &stdout_expected,
     const std::optional<std::string_view> &stderr_expected) const {
-  boost::asio::io_context context;
 
-  boost::asio::readable_pipe rp_out{context};
-  boost::asio::readable_pipe rp_err{context};
-  bp::process child(
-      context, program, {},
-      boost::process::process_stdio({.out = rp_out, .err = rp_err}));
-  child.wait();
+  auto p = subprocess::Popen({program.generic_string()},
+                             subprocess::output{subprocess::PIPE});
+  const auto res = p.communicate();
 
-  ASSERT_EQ(child.exit_code(), exit_code);
+  ASSERT_EQ(p.retcode(), exit_code);
   if (stdout_expected) {
-    const auto stdout_content = read_pipe(rp_out);
-    ASSERT_EQ(stdout_content, stdout_expected.value());
+    ASSERT_EQ(res.first.string(), stdout_expected.value());
   }
   if (stderr_expected) {
-    const auto stderr_content = read_pipe(rp_err);
-    ASSERT_EQ(stderr_content, stderr_expected.value());
+    ASSERT_EQ(res.second.string(), stderr_expected.value());
   }
 }
 

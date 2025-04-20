@@ -1,7 +1,6 @@
 #include <cimple_config.hpp>
 #include <cimple_util.hpp>
 
-#include <filesystem>
 #include <stdexcept>
 #include <string>
 #include <vector>

@@ -37,8 +37,12 @@ void Curl::download_file(const std::string &url,
                    write_data_to_file);
   curl_easy_setopt(handle.curl_handle, CURLOPT_USERAGENT, "curl/8.12");
 
+  // Follow redirects: CURLFOLLOW_OBEYCODE. Needed for downloads from GitHub release
+  curl_easy_setopt(handle.curl_handle, CURLOPT_FOLLOWLOCATION,
+                   2L);
+
   std::ofstream out_file;
-  out_file.open(path, std::ios::out | std::ios::binary);
+  out_file.open(path.generic_string(), std::ios::out | std::ios::binary);
   if (!out_file) {
     throw std::runtime_error("Failed to open output file for writing");
   }

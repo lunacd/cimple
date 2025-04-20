@@ -2,14 +2,7 @@
 
 #include <cimple_pkg_config.hpp>
 
-#include <string_view>
-#include <string>
-#include <vector>
-
-#include <boost/asio/io_context.hpp>
-extern "C" {
-#include <lua.h>
-}
+#include <cpp-subprocess/subprocess.hpp>
 
 namespace cimple {
 class PkgBuildContext {
@@ -20,17 +13,11 @@ public:
   void build_pkg();
 
 private:
-  boost::asio::io_context m_io_context;
-  lua_State *m_lua_state;
   PkgConfig m_config;
   std::filesystem::path m_temp_dir;
 
-  int run_process(const std::string_view &program,
-                  const std::vector<std::string> &args);
+  void run_pkg_rules(const PkgRules &rules, const std::filesystem::path &cwd);
 
-  int l_run(lua_State *lua_state);
-  int l_run_full(lua_State *lua_state);
-
-  friend int open_cimple_lib(lua_State *L);
+  subprocess::env_map_t get_msvc_env();
 };
 } // namespace cimple

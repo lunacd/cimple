@@ -1,5 +1,4 @@
 find_package(GTest REQUIRED)
-find_package(Boost REQUIRED COMPONENTS process)
 
 add_executable(cimple-tests
     build_tests/basic.cpp
@@ -20,14 +19,9 @@ target_link_libraries(cimple-tests PRIVATE
     GTest::gmock
     GTest::gmock_main
     libcimple
-    Boost::process
 )
 
-if (WIN32)
-    target_link_libraries(cimple-tests PRIVATE wsock32 bcrypt)
-endif()
-
-target_compile_definitions(cimple-tests PRIVATE BOOST_PROCESS_USE_STD_FS)
+target_include_directories(cimple-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../external)
 
 include(GoogleTest)
 gtest_discover_tests(cimple-tests PROPERTIES

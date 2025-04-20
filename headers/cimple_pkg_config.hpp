@@ -1,25 +1,43 @@
 #pragma once
 
 #include <filesystem>
+#include <regex>
 #include <string>
-#include <unordered_map>
 
-#include <boost/process/v2/environment.hpp>
+#include <cpp-subprocess/subprocess.hpp>
 
 namespace cimple {
+class PkgCommand {
+public:
+  std::string program;
+  std::vector<std::string> args;
+};
+
+using PkgRules = std::vector<PkgCommand>;
+
+class PkgOverrideRules {
+public:
+  std::regex platform_matcher;
+  PkgRules rules;
+};
+
 class PkgConfig {
 public:
+  std::string name;
+  std::vector<std::string> supported_platforms;
+
   std::string input;
   std::string input_sha256;
-  std::string output;
+  int64_t output_format;
   std::string output_sha256;
-  std::filesystem::path build_script;
+
+  PkgRules default_rules;
+  std::vector<PkgOverrideRules> override_rules;
+
   std::filesystem::path toolchain_dir;
   std::filesystem::path work_dir;
 
-  std::unordered_map<boost::process::environment::key,
-                     boost::process::environment::value>
-      env;
+  subprocess::env_map_t env;
 };
 
 PkgConfig load_pkg_config(const std::filesystem::path &config_path);

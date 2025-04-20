@@ -1,7 +1,7 @@
 #pragma once
 
-#include <filesystem>
 #include <vector>
+#include <filesystem>
 
 namespace cimple {
 class NinjaGraph {

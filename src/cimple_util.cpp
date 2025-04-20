@@ -1,35 +1,13 @@
 #include <cimple_util.hpp>
 
 #include <algorithm>
-#include <filesystem>
-#include <string_view>
 #include <vector>
 
-
 #ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
+#include <Windows.h>
 #endif
 
 namespace cimple {
-std::vector<std::string_view> split(std::string_view str, char delim) {
-  std::vector<std::string_view> result;
-  size_t current_delim = 0;
-  size_t start = 0;
-  size_t next = str.find(delim, start);
-  while (current_delim != std::string_view::npos) {
-    const auto segment = str.substr(start, next - start);
-    if (segment.size() > 0) {
-      result.emplace_back(segment);
-    }
-    current_delim = next;
-    start = current_delim + 1;
-    next = str.find(delim, start);
-  }
-  return result;
-};
-
 std::vector<std::filesystem::path>
 files_with_extension(const std::filesystem::path &dir,
                      const std::vector<std::string> &extensions) {
@@ -44,5 +22,29 @@ files_with_extension(const std::filesystem::path &dir,
     }
   }
   return results;
+}
+
+std::wstring to_wstring(const std::string &str) {
+#ifdef _WIN32
+  if (str.empty())
+    return std::wstring();
+
+  size_t charsNeeded =
+      ::MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), NULL, 0);
+  if (charsNeeded == 0)
+    throw std::runtime_error("Failed converting UTF-8 string to UTF-16");
+
+  std::vector<wchar_t> buffer(charsNeeded);
+  int charsConverted = ::MultiByteToWideChar(
+      CP_UTF8, 0, str.data(), (int)str.size(), &buffer[0], buffer.size());
+  if (charsConverted == 0)
+    throw std::runtime_error("Failed converting UTF-8 string to UTF-16");
+
+  return std::wstring(buffer.begin(), buffer.end());
+#else
+  throw std::logic_error(
+      "to_stringw is not implemented for POSIX platforms yet, plus you "
+      "shouldn't need this in the first place.");
+#endif
 }
 }; // namespace cimple

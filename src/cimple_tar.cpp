@@ -6,18 +6,17 @@
 
 #include <archive.h>
 #include <archive_entry.h>
-#include <string>
 
 namespace cimple {
 namespace {
 void handle_archive_error(struct archive *ar, int r) {
   if (r < ARCHIVE_OK && r >= ARCHIVE_WARN) {
-    Diagnostics::warn(archive_error_string(ar));
+    Diagnostics::warn(std::format("Error operating on tarball: {}",
+                                  archive_error_string(ar)));
   }
   if (r < ARCHIVE_WARN) {
-    const char *msg = archive_error_string(ar);
-    Diagnostics::error(msg);
-    throw std::runtime_error(msg);
+    throw std::runtime_error(std::format("Error operating on tarball: {}",
+                                         archive_error_string(ar)));
   }
 }
 
@@ -44,12 +43,11 @@ get_tar_output_path(const std::filesystem::path &target_path,
                     const std::filesystem::path &tarball_name) {
   const auto leading_it = original_path.begin();
   if (leading_it == original_path.end()) {
-    Diagnostics::error("Tarball contained an empty path");
-    return target_path;
+    throw std::runtime_error("Pkg input tarball contained an empty path");
   }
   if (*leading_it != tarball_name) {
-    Diagnostics::warn(
-        "Tarball content is not contained within a directory of the same name");
+    Diagnostics::warn("Input tarball content is not contained within a "
+                      "directory of the same name");
     return target_path / original_path;
   }
   std::filesystem::path dest_path = target_path;

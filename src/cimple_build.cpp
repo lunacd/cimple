@@ -3,17 +3,9 @@
 #include <cimple_ninja.hpp>
 #include <cimple_util.hpp>
 
-#include <filesystem>
-
-#ifdef _WIN32
-#include <winsock2.h>
-#endif
-#include <boost/process/v2/process.hpp>
-#include <boost/process/v2/start_dir.hpp>
+#include <cpp-subprocess/subprocess.hpp>
 
 namespace cimple {
-namespace bp = boost::process;
-
 void build_target_graph(const Target &target, const Config &config,
                         NinjaGraph &build_grah) {
   const auto source_files =
@@ -59,10 +51,8 @@ void build(const Config &config) {
   // Build
   build_graph.export_ninja(config.build_dir / "build.ninja");
   // TODO: provide ninja, and make this configurable
-  boost::asio::io_context context;
-  std::filesystem::path ninja_path = "D:/msys64/usr/bin/ninja.exe";
-  bp::process child(context, ninja_path, {},
-                    bp::process_start_dir(config.build_dir));
-  child.wait();
+  auto p = subprocess::Popen({"D:/msys64/usr/bin/ninja.exe"},
+                             subprocess::cwd{config.build_dir});
+  p.wait();
 }
 } // namespace cimple

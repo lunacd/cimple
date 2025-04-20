@@ -18,8 +18,8 @@ FetchContent_Declare(
 )
 FetchContent_Declare(
     nlohmann_json
-    URL https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz
-    URL_HASH SHA256=d69f9deb6a75e2580465c6c4c5111b89c4dc2fa94e3a85fcd2ffcd9a143d9273
+    URL https://github.com/nlohmann/json/archive/refs/tags/v3.12.0.tar.gz
+    URL_HASH SHA256=4B92EB0C06D10683F7447CE9406CB97CD4B453BE18D7279320F7B2F025C10187
 )
 FetchContent_Declare(
     fmt
@@ -28,8 +28,8 @@ FetchContent_Declare(
 )
 FetchContent_Declare(
     CLI11
-    URL https://github.com/CLIUtils/CLI11/archive/refs/tags/v2.1.2.tar.gz
-    URL_HASH SHA256=26291377e892ba0e5b4972cdfd4a2ab3bf53af8dac1f4ea8fe0d1376b625c8cb
+    URL https://github.com/CLIUtils/CLI11/archive/refs/tags/v2.5.0.tar.gz
+    URL_HASH SHA256=17E02B4CDDC2FA348E5DBDBB582C59A3486FA2B2433E70A0C3BACB871334FD55
 )
 
 # Skip unneeded parts in graaf
@@ -42,7 +42,7 @@ set(BOOST_INCLUDE_LIBRARIES process)
 set(BOOST_ENABLE_CMAKE ON)
 
 macro(provide_dependency method dep_name)
-    if ("${dep_name}" MATCHES "^(cps|GTest|tl-expected|nlohmann_json|fmt|CLI11|graaf)$")
+    if ("${dep_name}" MATCHES "^(cps|GTest|tl-expected|nlohmann_json|fmt|CLI11)$")
         FetchContent_MakeAvailable(${dep_name})
         set(${dep_name}_FOUND TRUE)
     endif()
