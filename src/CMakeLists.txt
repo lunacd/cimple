@@ -1,4 +1,4 @@
-add_library(libcimple
+add_library(cimple
     cimple_config.cpp
     cimple_util.cpp
     cimple_build.cpp
@@ -11,7 +11,7 @@ add_library(libcimple
     cimple_tar.cpp
 )
 
-add_executable(cimple
+add_executable(cimple-bin
     cimple.cpp
 )
 
@@ -22,7 +22,7 @@ find_package(lua REQUIRED)
 find_package(curl REQUIRED)
 find_package(LibArchive REQUIRED)
 
-target_link_libraries(libcimple PRIVATE
+target_link_libraries(cimple PRIVATE
     cps
     tomlplusplus::tomlplusplus
     lua::lua
@@ -30,14 +30,15 @@ target_link_libraries(libcimple PRIVATE
     LibArchive::LibArchive
 )
 
-target_include_directories(libcimple PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../external)
+target_include_directories(cimple PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../external)
 
 if(TARGET CURL::libcurl AND WIN32)
     target_link_libraries(CURL::libcurl INTERFACE bcrypt)
 endif()
 
-target_link_libraries(cimple PRIVATE
+target_link_libraries(cimple-bin PRIVATE
     Boost::program_options
+    cimple
 )
 
-target_link_libraries(cimple PRIVATE libcimple)
+set_target_properties(cimple-bin PROPERTIES OUTPUT_NAME "cimple")

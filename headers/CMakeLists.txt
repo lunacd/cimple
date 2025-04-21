@@ -1,4 +1,4 @@
-target_sources(libcimple PUBLIC FILE_SET HEADERS FILES
+target_sources(cimple PUBLIC FILE_SET HEADERS FILES
     cimple_build.hpp
     cimple_config.hpp
     cimple_util.hpp
@@ -11,4 +11,4 @@ target_sources(libcimple PUBLIC FILE_SET HEADERS FILES
     cimple_tar.hpp
 )
 
-target_include_directories(libcimple PUBLIC .)
+target_include_directories(cimple PUBLIC .)

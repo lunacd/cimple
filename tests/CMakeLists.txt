@@ -18,7 +18,7 @@ target_link_libraries(cimple-tests PRIVATE
     GTest::gtest
     GTest::gmock
     GTest::gmock_main
-    libcimple
+    cimple
 )
 
 target_include_directories(cimple-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../external)
