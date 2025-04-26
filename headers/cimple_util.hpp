@@ -15,7 +15,7 @@ concept is_string_type = requires(T str) {
 
 template <typename T>
   requires is_string_type<T>
-std::vector<T> split(T str, typename T::value_type delim) {
+std::vector<T> split(T str, T delim) {
   std::vector<T> result;
   size_t current_delim = 0;
   size_t start = 0;
@@ -26,7 +26,7 @@ std::vector<T> split(T str, typename T::value_type delim) {
       result.emplace_back(segment);
     }
     current_delim = next;
-    start = current_delim + 1;
+    start = current_delim + delim.size();
     next = str.find(delim, start);
   }
   return result;

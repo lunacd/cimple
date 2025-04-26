@@ -12,6 +12,8 @@
 
 namespace cimple {
 subprocess::env_map_t PkgBuildContext::get_msvc_env() {
+  // Start with an empty environment
+  subprocess::env_map_t envvars;
   // Run vcvarsall.bat
   auto p = subprocess::Popen(
       {"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
@@ -21,8 +23,7 @@ subprocess::env_map_t PkgBuildContext::get_msvc_env() {
        "DevShell.dll'; Enter-VsDevShell 393607b9 -SkipAutomaticLocation "
        "-DevCmdArguments '-arch=x64 -host_arch=x64'; Get-ChildItem Env: | "
        "ForEach-Object { \\\"$($_.Name)=$($_.Value)\\\" } }"},
-      subprocess::output{subprocess::PIPE},
-      subprocess::environment{m_config.env});
+      subprocess::output{subprocess::PIPE}, subprocess::environment{envvars});
   const auto stdout_buf = p.communicate().first;
   const auto out_str =
 #ifdef _WIN32
@@ -32,12 +33,11 @@ subprocess::env_map_t PkgBuildContext::get_msvc_env() {
 #endif
 
   // Parse envvars
-  subprocess::env_map_t envvars;
-  subprocess::env_char_t deliminator =
+  subprocess::env_string_t deliminator =
 #ifdef _WIN32
-      L'\n'
+      L"\r\n"
 #else
-      '\n'
+      "\n"
 #endif
       ;
   const auto lines = split(out_str, deliminator);
@@ -50,6 +50,20 @@ subprocess::env_map_t PkgBuildContext::get_msvc_env() {
     const auto key = line.substr(0, equal_sign);
     const auto value = line.substr(equal_sign + 1);
     envvars.emplace(key, value);
+  }
+  // Merge cimple-specific env into VS ones
+  const auto path_it = envvars.find(L"Path");
+  if (path_it != envvars.end()) {
+    path_it->second = m_config.env.at(L"Path") + L";" + path_it->second;
+  }
+  for (auto &[env_key, env_value] : m_config.env) {
+    if (env_key == L"Path") {
+      continue;
+    }
+    envvars.emplace(env_key, env_value);
+  }
+  for (const auto &[env_key, env_value] : envvars) {
+    std::wcout << "-" << env_key << "=" << env_value << "-" << "\n";
   }
   return envvars;
 }
@@ -68,6 +82,8 @@ void PkgBuildContext::run_pkg_rules(const PkgRules &rules,
     // TODO: remove hard-coded bash after bootstrapping bash
     if (rule.program == "bash") {
       program = "D:/msys64/usr/bin/bash.exe";
+    } else if (rule.program == "make") {
+      program = "D:/msys64/usr/bin/make.exe";
     } else {
       program = rule.program;
     }

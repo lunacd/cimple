@@ -27,7 +27,7 @@ std::optional<PkgCommand> get_package_cmd(const std::string &cmd) {
   if (cmd.empty()) {
     return std::nullopt;
   }
-  const auto split_cmd = split(cmd, ' ');
+  const auto split_cmd = split(cmd, std::string(" "));
   assert(!split_cmd.empty());
   const auto begin = split_cmd.begin();
   std::vector<std::string> args(std::next(begin), split_cmd.end());
@@ -162,6 +162,7 @@ PkgConfig load_pkg_config(const std::filesystem::path &config_path) {
       {L"Path", env_path_str.c_str()},
       {L"CC", L"clang"},
       {L"CXX", L"clang++"},
+      {L"CXXFLAGS", L"-m64"},
 #else
       {"PATH", env_path_str.c_str()},
       {"CC", "clang"},
