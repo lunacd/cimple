@@ -3,13 +3,13 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cpp-subprocess/subprocess.hpp>
 #include <iterator>
 #include <optional>
 #include <ranges>
 #include <stdexcept>
 #include <string>
 
+#include <cpp-subprocess/subprocess.hpp>
 #include <toml++/toml.hpp>
 
 namespace cimple {
@@ -143,7 +143,7 @@ PkgConfig load_pkg_config(const std::filesystem::path &config_path) {
       "C:/Program Files/Microsoft Visual "
       "Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/Hostx64/x64/"};
 
-  subprocess::env_string_t env_path_str;
+  subprocess::env_str_t env_path_str;
   subprocess::env_char_t path_delimiter =
 #ifdef _WIN32
       L';'

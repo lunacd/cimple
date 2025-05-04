@@ -19,9 +19,8 @@ target_link_libraries(cimple-tests PRIVATE
     GTest::gmock
     GTest::gmock_main
     cimple
+    cpp-subprocess::subprocess
 )
-
-target_include_directories(cimple-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../external)
 
 include(GoogleTest)
 gtest_discover_tests(cimple-tests PROPERTIES

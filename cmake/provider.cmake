@@ -31,6 +31,11 @@ FetchContent_Declare(
     URL https://github.com/CLIUtils/CLI11/archive/refs/tags/v2.5.0.tar.gz
     URL_HASH SHA256=17E02B4CDDC2FA348E5DBDBB582C59A3486FA2B2433E70A0C3BACB871334FD55
 )
+FetchContent_Declare(
+    cpp-subprocess
+    GIT_REPOSITORY https://github.com/lunacd/cpp-subprocess.git
+    GIT_TAG 27ac26ca4be64213820e220ae8a5b7dea08125c4
+)
 
 # Skip unneeded parts in graaf
 set(SKIP_TESTS ON)
@@ -42,7 +47,7 @@ set(BOOST_INCLUDE_LIBRARIES process)
 set(BOOST_ENABLE_CMAKE ON)
 
 macro(provide_dependency method dep_name)
-    if ("${dep_name}" MATCHES "^(cps|GTest|tl-expected|nlohmann_json|fmt|CLI11)$")
+    if ("${dep_name}" MATCHES "^(cps|GTest|tl-expected|nlohmann_json|fmt|CLI11|cpp-subprocess)$")
         FetchContent_MakeAvailable(${dep_name})
         set(${dep_name}_FOUND TRUE)
     endif()

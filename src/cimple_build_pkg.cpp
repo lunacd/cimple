@@ -33,7 +33,7 @@ subprocess::env_map_t PkgBuildContext::get_msvc_env() {
 #endif
 
   // Parse envvars
-  subprocess::env_string_t deliminator =
+  subprocess::env_str_t deliminator =
 #ifdef _WIN32
       L"\r\n"
 #else
@@ -90,7 +90,7 @@ void PkgBuildContext::run_pkg_rules(const PkgRules &rules,
     std::vector<std::string> cmd;
     cmd.emplace_back(program.generic_string());
     cmd.insert(cmd.end(), rule.args.begin(), rule.args.end());
-    auto p = subprocess::Popen(cmd, subprocess::cwd{cwd},
+    auto p = subprocess::Popen(rule.args, subprocess::cwd{cwd}, 
                                subprocess::environment{env});
     const auto res = p.communicate();
     std::cout << res.first.string() << "\n";

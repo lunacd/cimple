@@ -21,16 +21,15 @@ find_package(boost REQUIRED COMPONENTS program_options)
 find_package(lua REQUIRED)
 find_package(curl REQUIRED)
 find_package(LibArchive REQUIRED)
+find_package(cpp-subprocess REQUIRED)
 
 target_link_libraries(cimple PRIVATE
     cps
     tomlplusplus::tomlplusplus
-    lua::lua
     CURL::libcurl
     LibArchive::LibArchive
+    cpp-subprocess::subprocess
 )
-
-target_include_directories(cimple PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../external)
 
 if(TARGET CURL::libcurl AND WIN32)
     target_link_libraries(CURL::libcurl INTERFACE bcrypt)
