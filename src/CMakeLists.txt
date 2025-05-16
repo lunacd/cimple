@@ -9,6 +9,7 @@ add_library(cimple
     cimple_build_pkg.cpp
     cimple_requests.cpp
     cimple_tar.cpp
+    cimple_oci.cpp
 )
 
 add_executable(cimple-bin
@@ -22,6 +23,7 @@ find_package(lua REQUIRED)
 find_package(curl REQUIRED)
 find_package(LibArchive REQUIRED)
 find_package(cpp-subprocess REQUIRED)
+find_package(uuid_v4 REQUIRED)
 
 target_link_libraries(cimple PRIVATE
     cps
@@ -29,7 +31,14 @@ target_link_libraries(cimple PRIVATE
     CURL::libcurl
     LibArchive::LibArchive
     cpp-subprocess::subprocess
+    uuid_v4::uuid_v4
 )
+
+if(MSVC)
+    target_compile_options(cimple PUBLIC /arch:SSE4.1 /arch:AVX2)
+else()
+    target_compile_options(cimple PUBLIC -msse4.1 -mavx2)
+endif()
 
 if(TARGET CURL::libcurl AND WIN32)
     target_link_libraries(CURL::libcurl INTERFACE bcrypt)

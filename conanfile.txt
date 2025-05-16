@@ -4,6 +4,7 @@ tomlplusplus/3.4.0
 lua/5.4.7
 libcurl/8.12.1
 libarchive/3.7.9
+simde/0.8.2
 
 [options]
 boost/*:without_stacktrace=True

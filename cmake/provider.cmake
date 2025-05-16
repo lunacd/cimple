@@ -36,6 +36,11 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/lunacd/cpp-subprocess.git
     GIT_TAG 27ac26ca4be64213820e220ae8a5b7dea08125c4
 )
+FetchContent_Declare(
+    uuid_v4
+    GIT_REPOSITORY https://github.com/crashoz/uuid_v4.git
+    GIT_TAG 41238a44dcd3d2991a7c1d88c2c9fbffd880cd8a
+)
 
 # Skip unneeded parts in graaf
 set(SKIP_TESTS ON)
@@ -47,7 +52,7 @@ set(BOOST_INCLUDE_LIBRARIES process)
 set(BOOST_ENABLE_CMAKE ON)
 
 macro(provide_dependency method dep_name)
-    if ("${dep_name}" MATCHES "^(cps|GTest|tl-expected|nlohmann_json|fmt|CLI11|cpp-subprocess)$")
+    if ("${dep_name}" MATCHES "^(cps|GTest|tl-expected|nlohmann_json|fmt|CLI11|cpp-subprocess|uuid_v4)$")
         FetchContent_MakeAvailable(${dep_name})
         set(${dep_name}_FOUND TRUE)
     endif()
