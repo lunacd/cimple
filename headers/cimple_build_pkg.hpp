@@ -25,11 +25,5 @@ private:
   void run_pkg_rules(const PkgRules &rules,
                      const std::filesystem::path &image_path,
                      const std::filesystem::path &input_path);
-
-  //! Get MSVC environment variables
-  /*!
-   * \return environment with MSVC variables populated
-   */
-  subprocess::env_map_t get_msvc_env();
 };
 } // namespace cimple

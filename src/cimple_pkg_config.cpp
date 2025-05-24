@@ -79,6 +79,57 @@ PkgRules get_package_rules(const toml::array *arr) {
   }
   return rules;
 }
+
+//! Get MSVC environment variables
+/*!
+ * \return environment with MSVC variables populated
+ */
+subprocess::env_map_t get_msvc_env(const subprocess::env_map_t &original_env) {
+  // Start with an empty environment
+  subprocess::env_map_t envvars;
+  // Run vcvarsall.bat
+  auto p = subprocess::Popen(
+      {"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+       "-Command",
+       "&{Import-Module 'C:\\Program Files\\Microsoft Visual "
+       "Studio\\2022\\Community\\Common7\\Tools\\Microsoft.VisualStudio."
+       "DevShell.dll'; Enter-VsDevShell 393607b9 -SkipAutomaticLocation "
+       "-DevCmdArguments '-arch=x64 -host_arch=x64'; Get-ChildItem Env: | "
+       "ForEach-Object { \"$($_.Name)=$($_.Value)\" } }"},
+      subprocess::output{subprocess::PIPE}, subprocess::environment{envvars});
+  // TODO: Check result?
+  // TODO: original env seems to be leaking into the result, either isolate it,
+  // or filter this somehow
+  const auto process_result = p.communicate();
+  const auto out_str = to_wstring(process_result.first.string());
+
+  // Parse envvars
+  subprocess::env_str_t deliminator = L"\r\n";
+
+  const auto lines = split(out_str, deliminator);
+  for (const auto &line : lines) {
+    const auto equal_sign = line.find('=');
+    if (equal_sign == std::string_view::npos) {
+      continue;
+    }
+    // It's a envvar if there's a equal sign
+    const auto key = line.substr(0, equal_sign);
+    const auto value = line.substr(equal_sign + 1);
+    envvars.emplace(key, value);
+  }
+  // Merge cimple-specific env into VS ones
+  const auto path_it = envvars.find(L"Path");
+  if (path_it != envvars.end()) {
+    path_it->second = original_env.at(L"Path") + L";" + path_it->second;
+  }
+  for (auto &[env_key, env_value] : original_env) {
+    if (env_key == L"Path") {
+      continue;
+    }
+    envvars.emplace(env_key, env_value);
+  }
+  return envvars;
+}
 }; // namespace
 
 PkgConfig load_pkg_config(const std::filesystem::path &config_path) {
@@ -169,9 +220,14 @@ PkgConfig load_pkg_config(const std::filesystem::path &config_path) {
   };
 
 #ifdef _WIN32
-  // TODO: replace hard-coded D:/temp, this should probably go into image-config.json
+  // TODO: replace hard-coded D:/temp, this should probably go into
+  // image-config.json
   env.emplace(L"TMP", L"D:/temp/tmp");
   env.emplace(L"TEMP", L"D:/temp/tmp");
+
+  // Get MSVC environment
+  // TODO: should this step be made configurable?
+  env = get_msvc_env(env);
 #endif
 
   return PkgConfig{.name = pkg_name.value(),
@@ -184,4 +240,5 @@ PkgConfig load_pkg_config(const std::filesystem::path &config_path) {
                    .input_path = input_path,
                    .env = env};
 }
+
 } // namespace cimple
