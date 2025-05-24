@@ -10,6 +10,7 @@ target_sources(cimple PUBLIC FILE_SET HEADERS FILES
     cimple_requests.hpp
     cimple_tar.hpp
     cimple_oci.hpp
+    cimple_constants.hpp
 )
 
 target_include_directories(cimple PUBLIC .)

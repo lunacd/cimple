@@ -34,8 +34,8 @@ public:
   PkgRules default_rules;
   std::vector<PkgOverrideRules> override_rules;
 
-  std::filesystem::path toolchain_dir;
-  std::filesystem::path work_dir;
+  std::filesystem::path image_path;
+  std::filesystem::path input_path;
 
   subprocess::env_map_t env;
 };

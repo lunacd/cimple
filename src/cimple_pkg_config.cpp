@@ -133,15 +133,18 @@ PkgConfig load_pkg_config(const std::filesystem::path &config_path) {
     override_rules_vec.emplace_back(override_rules);
   }
 
-  const std::filesystem::path toolchain_path{"D:/toolchain/"};
-  const std::filesystem::path workdir{"D:/workdir/"};
+  // TODO: consider possibility for reuse?
+  // TODO: extract to different directory
+  // TODO: respect `image` setting in package manifest
+  const std::filesystem::path image_path{"D:/temp/image/"};
+  const std::filesystem::path input_path{"D:/temp/input/"};
 
   // Join paths by bp::environment::delimiter
   // TODO: remove hard-coded msys path after bootstrapping coreutils
   std::vector<std::filesystem::path> env_path{
-      workdir / "bin", toolchain_path / "bin", "D:/msys64/usr/bin",
-      "C:/Program Files/Microsoft Visual "
-      "Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/Hostx64/x64/"};
+      image_path / "bin",
+      image_path / "usr" / "bin",
+  };
 
   subprocess::env_str_t env_path_str;
   subprocess::env_char_t path_delimiter =
@@ -160,18 +163,13 @@ PkgConfig load_pkg_config(const std::filesystem::path &config_path) {
   subprocess::env_map_t env{
 #ifdef _WIN32
       {L"Path", env_path_str.c_str()},
-      {L"CC", L"clang"},
-      {L"CXX", L"clang++"},
-      {L"CXXFLAGS", L"-m64"},
 #else
       {"PATH", env_path_str.c_str()},
-      {"CC", "clang"},
-      {"CXX", "clang++"},
 #endif
   };
 
 #ifdef _WIN32
-  // TODO: replace hard-coded D:/temp
+  // TODO: replace hard-coded D:/temp, this should probably go into image-config.json
   env.emplace(L"TMP", L"D:/temp/tmp");
   env.emplace(L"TEMP", L"D:/temp/tmp");
 #endif
@@ -182,8 +180,8 @@ PkgConfig load_pkg_config(const std::filesystem::path &config_path) {
                    .output_format = output_format.value(),
                    .default_rules = default_rules,
                    .override_rules = override_rules_vec,
-                   .toolchain_dir = toolchain_path,
-                   .work_dir = workdir,
+                   .image_path = image_path,
+                   .input_path = input_path,
                    .env = env};
 }
 } // namespace cimple

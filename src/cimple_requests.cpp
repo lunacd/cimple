@@ -48,6 +48,5 @@ void Curl::download_file(const std::string &url,
   }
   curl_easy_setopt(handle.curl_handle, CURLOPT_WRITEDATA, &out_file);
   const auto error_code = curl_easy_perform(handle.curl_handle);
-  std::cout << error_code << "\n";
 }
 } // namespace cimple

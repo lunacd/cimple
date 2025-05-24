@@ -1,3 +1,0 @@
-cimple.run([[
-    clang --version
-]])

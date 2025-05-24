@@ -16,8 +16,20 @@ private:
   PkgConfig m_config;
   std::filesystem::path m_temp_dir;
 
-  void run_pkg_rules(const PkgRules &rules, const std::filesystem::path &cwd);
+  //! Run a package's build rules
+  /*!
+   * \param rules the rules to run
+   * \param image_path path to an extracted chroot image
+   * \param input_path path to extracted package source
+   */
+  void run_pkg_rules(const PkgRules &rules,
+                     const std::filesystem::path &image_path,
+                     const std::filesystem::path &input_path);
 
+  //! Get MSVC environment variables
+  /*!
+   * \return environment with MSVC variables populated
+   */
   subprocess::env_map_t get_msvc_env();
 };
 } // namespace cimple
